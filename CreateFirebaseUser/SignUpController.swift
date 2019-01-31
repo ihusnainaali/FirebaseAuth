@@ -8,8 +8,9 @@
 
 import UIKit
 import Firebase
+import GoogleSignIn
 
-class SignUpController: UIViewController {
+class SignUpController: UIViewController, GIDSignInUIDelegate {
     
     // MARK: - Properties
     
@@ -63,6 +64,44 @@ class SignUpController: UIViewController {
         return button
     }()
     
+    lazy var dividerView: UIView = {
+        let dividerView = UIView()
+        
+        let label = UILabel()
+        label.text = "OR"
+        label.textColor = UIColor(white: 1, alpha: 0.88)
+        label.font = UIFont.systemFont(ofSize: 14)
+        dividerView.addSubview(label)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.centerYAnchor.constraint(equalTo: dividerView.centerYAnchor).isActive = true
+        label.centerXAnchor.constraint(equalTo: dividerView.centerXAnchor).isActive = true
+        
+        let separator1 = UIView()
+        separator1.backgroundColor = UIColor(white: 1, alpha: 0.88)
+        dividerView.addSubview(separator1)
+        separator1.anchor(top: nil, left: dividerView.leftAnchor, bottom: nil, right: label.leftAnchor, paddingTop: 0, paddingLeft: 8, paddingBottom: 0, paddingRight: 8, width: 0, height: 1.0)
+        separator1.centerYAnchor.constraint(equalTo: dividerView.centerYAnchor).isActive = true
+        
+        let separator2 = UIView()
+        separator2.backgroundColor = UIColor(white: 1, alpha: 0.88)
+        dividerView.addSubview(separator2)
+        separator2.anchor(top: nil, left: label.rightAnchor, bottom: nil, right: dividerView.rightAnchor, paddingTop: 0, paddingLeft: 8, paddingBottom: 0, paddingRight: 8, width: 0, height: 1.0)
+        separator2.centerYAnchor.constraint(equalTo: dividerView.centerYAnchor).isActive = true
+        
+        return dividerView
+    }()
+    
+    let googleLoginButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.layer.cornerRadius = 5
+        button.setTitle("Sign In with Google", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
+        button.backgroundColor = .googleRed()
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(handleGoogleSignIn), for: .touchUpInside)
+        return button
+    }()
+    
     let dontHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
         let attributedTitle = NSMutableAttributedString(string: "Already have an account?  ", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.white])
@@ -77,9 +116,15 @@ class SignUpController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViewComponents()
+        
+        GIDSignIn.sharedInstance()?.uiDelegate = self
     }
     
     // MARK: - Selectors
+    
+    @objc func handleGoogleSignIn() {
+        GIDSignIn.sharedInstance()?.signIn()
+    }
     
     @objc func handleSignUp() {
         guard let email = emailTextField.text else { return }
@@ -149,6 +194,12 @@ class SignUpController: UIViewController {
         
         view.addSubview(loginButton)
         loginButton.anchor(top: passwordContainerView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 24, paddingLeft: 32, paddingBottom: 0, paddingRight: 32, width: 0, height: 50)
+        
+        view.addSubview(dividerView)
+        dividerView.anchor(top: loginButton.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 24, paddingLeft: 32, paddingBottom: 0, paddingRight: 32, width: 0, height: 50)
+        
+        view.addSubview(googleLoginButton)
+        googleLoginButton.anchor(top: dividerView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 24, paddingLeft: 32, paddingBottom: 0, paddingRight: 32, width: 0, height: 50)
         
         view.addSubview(dontHaveAccountButton)
         dontHaveAccountButton.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 32, paddingBottom: 12, paddingRight: 32, width: 0, height: 50)

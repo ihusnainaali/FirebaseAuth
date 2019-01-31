@@ -71,6 +71,10 @@ extension UIColor {
     static func mainBlue() -> UIColor {
         return UIColor.rgb(red: 0, green: 150, blue: 255)
     }
+    
+    static func googleRed() -> UIColor {
+        return UIColor.rgb(red: 220, green: 78, blue: 65)
+    }
 }
 
 extension UITextField {
